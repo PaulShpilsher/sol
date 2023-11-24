@@ -33,6 +33,26 @@ describe("Payments", () => {
   });
 
   
+  it("should be possible to send funds", async () => {
+    const msg ="payment message";
+    const amount = 100;
+
+    // otherAccount makes payment
+    const tx = await payments.connect(otherAccount).pay(msg, {value: amount});
+
+    // test that after transaction otherAccount's balance decreases, and contract's balance increases by 'amt'
+    await expect(() => tx).to.changeEtherBalances([otherAccount, payments], [-amount, amount]);
+    await tx.wait();
+
+    // get payment information
+    const payment = await payments.getPayment(otherAccount, 0);
+    // console.log(payment);
+    
+    expect(payment.amount).to.eq(amount);
+    expect(payment.from).to.eq(otherAccount.address);
+    expect(payment.message).to.eq(msg);
+  });
+
   
   
 });
