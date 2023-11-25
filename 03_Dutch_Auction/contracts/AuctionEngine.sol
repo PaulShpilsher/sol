@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
+
+
 /**
  * Dutch Auction Engine    
  */
@@ -77,7 +79,7 @@ contract AuctionEngine {
         uint price = getCurrentPrice(_index);
         require(msg.value >= price, "not enough funds!");
 
-        Auction memory auction = auctions[_index];
+        Auction storage auction = auctions[_index];
         auction.stopped = true;
         auction.finalPrice = price;
         
@@ -91,8 +93,6 @@ contract AuctionEngine {
         auction.seller.transfer(price - ((price * OWNER_FEE) / 100));
 
         emit AuctionEnded(_index, price, msg.sender);
-
-        auctions[_index] = auction;
     }
 
 

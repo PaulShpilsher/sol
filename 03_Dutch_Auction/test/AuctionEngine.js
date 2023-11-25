@@ -1,20 +1,25 @@
-// const { expect } = require("chai");
-// const { ethers } = require("hardhat");
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
-// describe("Payments", () => {
+describe("AuctionEngine", () => {
 
-//   let ownerAccount, otherAccount;
-//   let smartContract;
-//   let smartContractAddress;
+  let ownerAccount, sellerAccount, buyerAccount;
+  let engine;
 
-//   beforeEach(async () => {
-//     [ownerAccount, otherAccount] = await ethers.getSigners(); // get a couple of accounts
-//     const SmartContract = await ethers.getContractFactory("Demo1", ownerAccount); // create contract
-//     smartContract = await SmartContract.deploy();  // deploying contract to BC    
-//     await smartContract.waitForDeployment();  // wait unitl contract deployed 
-//     smartContractAddress = await smartContract.getAddress();;
-//   });
+  beforeEach(async () => {
+    [ownerAccount, sellerAccount, buyerAccount] = await ethers.getSigners(); // get a couple of accounts
+    const smartContract = await ethers.getContractFactory("AuctionEngine", ownerAccount); // create contract
+    engine = await smartContract.deploy();  // deploying contract to BC    
+    await engine.waitForDeployment();  // wait unitl contract deployed 
+  });
 
+  
+  it("sets owner", async () => {    
+    const engineOwnerAddress = await engine.owner();
+    expect(engineOwnerAddress).to.eq(ownerAccount.address);
+  });
+
+});
 
 //   const  sendMoney = async (sender) => {
 //     const amount = 100;
