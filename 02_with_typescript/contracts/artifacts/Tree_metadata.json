@@ -1,0 +1,123 @@
+{
+	"compiler": {
+		"version": "0.8.22+commit.4fc1097e"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "hashes",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_input",
+						"type": "string"
+					}
+				],
+				"name": "makeHash",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_transaction",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_root",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "_proof",
+						"type": "bytes32[]"
+					}
+				],
+				"name": "verify",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"02_with_typescript/contracts/Tree.sol": "Tree"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"02_with_typescript/contracts/Tree.sol": {
+			"keccak256": "0x8ab3566d4596fe652bf47728c34f52e4b9f5a55744847f1445644a5b6d8e47b0",
+			"license": "UNLICENSED",
+			"urls": [
+				"bzz-raw://a7fa301abfa3137c9893becd06d0e617637c293ff5ccbe1aa49ef3bda9eaaef2",
+				"dweb:/ipfs/QmPaZewDYTFfrc6Xasojt7SFULsfb8LBEY7BehR1qqiKdc"
+			]
+		}
+	},
+	"version": 1
+}
