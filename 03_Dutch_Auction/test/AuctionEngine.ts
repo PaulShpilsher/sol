@@ -76,9 +76,9 @@ describe("AuctionEngine", () => {
 
       await delay(1000);  // sleep for 1 seconds
 
-      const payAmount = startingPrice - BigInt(discountRate);
-      const tx = await engine.connect(buyerAccount).buy(0, { value: payAmount});
-      await expect(tx).to.emit(engine, "AuctionEnded").withArgs(0, payAmount, buyerAccount.address);
+      const purchasePrice = startingPrice - BigInt(discountRate);
+      const tx = await engine.connect(buyerAccount).buy(0, { value: purchasePrice});
+      await expect(tx).to.emit(engine, "AuctionEnded").withArgs(0, purchasePrice, buyerAccount.address);
 
       const auction = await engine.auctions(0);
       expect(auction.stopped).to.eq(true);
