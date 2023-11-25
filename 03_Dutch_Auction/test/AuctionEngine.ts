@@ -101,6 +101,17 @@ describe("AuctionEngine", () => {
         .withArgs(0, auction.finalPrice, buyerAccount.address);
     });
 
+
+    it("cannot buy more than once", async function () {
+
+      const price = ethers.parseEther("0.0001")
+      await engine.connect(sellerAccount).createAuction("fake item", price, 1, 60);
+      await engine.connect(buyerAccount).buy(0, { value: price });
+
+      await expect(engine.connect(buyerAccount).buy(0, { value: price }))
+        .to.be.revertedWith("stopped!");
+
+    });
     // TODO: fee
     // TODO: refund
     // TODO: seller gets whatever - fee
