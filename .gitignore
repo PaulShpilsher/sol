@@ -10,5 +10,5 @@ typechain
 typechain-types
 
 # solidity-coverage files
-/coverage
-/coverage.json
+coverage
+coverage.json

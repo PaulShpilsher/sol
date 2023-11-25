@@ -1,10 +1,12 @@
 {
-  "name": "02_with_typescript",
+  "name": "test",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx hardhat test",
+    "coverage": "npx hardhat coverage",
+    "clean": "npx hardhat clean",
+    "compile": "npx hardhat compile"
   },
   "author": "",
   "license": "ISC",
