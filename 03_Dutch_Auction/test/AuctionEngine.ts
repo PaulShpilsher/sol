@@ -104,6 +104,7 @@ describe("AuctionEngine", () => {
     // TODO: fee
     // TODO: refund
     // TODO: seller gets whatever - fee
+    // TODO: assertions
 
   });
 });
