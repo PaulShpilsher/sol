@@ -4,8 +4,8 @@ import { AuctionEngine } from "../typechain-types";
 
 const log = (...args: any[]) => console.log(...args);
 
-const delay =async (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
-  
+const delay = async (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 const getBlockTimestamp = async (blockNumber: number): Promise<number> => {
   const block = await ethers.provider.getBlock(blockNumber);
@@ -61,9 +61,8 @@ describe("AuctionEngine", () => {
     });
   });
 
-
   describe("bye", async () => {
-    it("allow to buy", async function() {
+    it("allow to buy", async function () {
       this.timeout(5000); // allow to test run at most for 5 seconds
 
       const item = "an awesome item";
@@ -74,14 +73,37 @@ describe("AuctionEngine", () => {
         .connect(sellerAccount)
         .createAuction(item, startingPrice, discountRate, duration);
 
-      await delay(1000);  // sleep for 1 seconds
+      await delay(1000); // sleep for 1 seconds
 
       const purchasePrice = startingPrice - BigInt(discountRate);
-      const tx = await engine.connect(buyerAccount).buy(0, { value: purchasePrice});
-      await expect(tx).to.emit(engine, "AuctionEnded").withArgs(0, purchasePrice, buyerAccount.address);
+      const tx = await engine
+        .connect(buyerAccount)
+        .buy(0, { value: purchasePrice });
 
       const auction = await engine.auctions(0);
       expect(auction.stopped).to.eq(true);
-     });
+    });
+
+    it("receive event", async function () {
+      this.timeout(5000); // allow to test run at most for 5 seconds
+
+      const startingPrice = ethers.parseEther("0.0001");
+      const discountRate = 5;
+      await engine
+        .connect(sellerAccount)
+        .createAuction("fake item", startingPrice, discountRate, 60);
+
+      const tx = await engine.connect(buyerAccount).buy(0, { value: startingPrice });
+
+      const auction = await engine.auctions(0);
+      await expect(tx)
+        .to.emit(engine, "AuctionEnded")
+        .withArgs(0, auction.finalPrice, buyerAccount.address);
+    });
+
+    // TODO: fee
+    // TODO: refund
+    // TODO: seller gets whatever - fee
+
   });
 });
