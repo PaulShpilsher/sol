@@ -4,6 +4,9 @@ import { AuctionEngine } from "../typechain-types";
 
 const log = (...args: any[]) => console.log(...args);
 
+const delay =async (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
+  
+
 const getBlockTimestamp = async (blockNumber: number): Promise<number> => {
   const block = await ethers.provider.getBlock(blockNumber);
   return block!.timestamp;
@@ -56,5 +59,29 @@ describe("AuctionEngine", () => {
       expect(auction.startAt).to.eq(timestamp);
       expect(auction.endsAt).to.eq(duration + timestamp);
     });
+  });
+
+
+  describe("bye", async () => {
+    it("allow to buy", async function() {
+      this.timeout(5000); // allow to test run at most for 5 seconds
+
+      const item = "an awesome item";
+      const startingPrice = ethers.parseEther("0.0001");
+      const discountRate = 3;
+      const duration = 60;
+      await engine
+        .connect(sellerAccount)
+        .createAuction(item, startingPrice, discountRate, duration);
+
+      await delay(1000);  // sleep for 1 seconds
+
+      const payAmount = startingPrice - BigInt(discountRate);
+      const tx = await engine.connect(buyerAccount).buy(0, { value: payAmount});
+      await expect(tx).to.emit(engine, "AuctionEnded").withArgs(0, payAmount, buyerAccount.address);
+
+      const auction = await engine.auctions(0);
+      expect(auction.stopped).to.eq(true);
+     });
   });
 });
