@@ -45,6 +45,8 @@ describe("WithLogger", () => {
     const tx = await owner.sendTransaction(txData);
     await tx.wait();
 
+    await expect(tx).to.changeEtherBalance(contract, amount);
+
     const sentAmount = await contract.getPayment(owner.address, 0);
     expect(sentAmount).to.equal(amount);
   });
