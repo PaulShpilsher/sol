@@ -64,8 +64,8 @@ contract ERC20 is IERC20 {
 
     
     // transfer tokens.  sender transfers tokens to _to address
-    function transfer(address _to, uint _amount) external {
-        _beforeTransfer(msg.sender, _to, _amount);
+    function transfer(address _to, uint _amount) external enoughTokens(msg.sender, _amount) {
+        _beforeTokenTransfer(msg.sender, _to, _amount);
         
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
@@ -82,12 +82,11 @@ contract ERC20 is IERC20 {
     // approve to spend (transfer tokens)
     function approve(address _spender, uint _amount) external {
         _approve(msg.sender, _spender, _amount);
-        // allowances[msg.sender][_spender] = _amount;
     }
 
 
     function mint(uint _initialSupply, address _principal) public onlyOwner {
-        _beforeTransfer(address(0), _principal, _initialSupply);
+        _beforeTokenTransfer(address(0), _principal, _initialSupply);
 
         balances[_principal] += _initialSupply;
         totalTokens += _initialSupply;
@@ -96,13 +95,19 @@ contract ERC20 is IERC20 {
     }
 
     // transfer tokens between two parties.  prerequisite "approve" should happen first
-    function transferFrom(address _sender, address _recipient, uint _amount) external {
-        
+    function transferFrom(address _sender, address _recipient, uint _amount) external enoughTokens(_sender, _amount) {
+        _beforeTokenTransfer(_sender, _recipient, _amount);
+
+        allowances[_sender][_recipient] -= _amount;
+        balances[_sender] -= _amount;
+        balances[_recipient] += _amount;
+
+        emit Transfer(_sender, _recipient, _amount);
     }
 
 
     /// 
-    function _beforeTransfer(address _from, address _to, uint _amount) internal virtual {
+    function _beforeTokenTransfer(address _from, address _to, uint _amount) internal virtual {
     }
 
 
