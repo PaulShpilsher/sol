@@ -3,6 +3,9 @@ pragma solidity ^0.8.9;
 
 interface IERC20 {
 
+    //
+    // extra stuff to the standard
+
     // token name.  not in ERC20 standart, but convinient to have it
     function name() external view returns(string memory);
 
@@ -11,6 +14,9 @@ interface IERC20 {
 
     // token precision. i.e. number of digits after the decimal point
     function decimals() external pure returns(uint); // 0
+
+    // end of extra stuff to the standard
+    //
 
     // total number of tokens 
     function totalSupply() external view returns(uint);
