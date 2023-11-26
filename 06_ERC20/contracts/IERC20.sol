@@ -24,7 +24,7 @@ interface IERC20 {
     // account balance in tokens
     function balanceOf(address _account) external view returns(uint); 
 
-    // transfer tokens
+    // transfer tokens.  sender transfers tokens to _to address
     function transfer(address _to, uint _amount) external;
 
     // amount spender can take from owners account for the 3rd party
