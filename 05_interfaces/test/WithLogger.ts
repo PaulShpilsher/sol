@@ -35,18 +35,19 @@ describe("WithLogger", () => {
     expect(address).to.not.eq(0);
   });
 
-  // it("can pay and get payment info", async () => {
-  //   const amount = 100;
-  //   const txData = {
-  //     value: amount,
-  //     to: contractAddress
-  //   };
+  it("can pay and get payment info", async () => {
+    const amount = 100;
+    const txData = {
+      value: amount,
+      to: contractAddress
+    };
 
-  //   const tx = await owner.sendTransaction(txData);
-  //   await tx.wait();
+    const tx = await owner.sendTransaction(txData);
+    await tx.wait();
 
-  // });
-
+    const sentAmount = await contract.getPayment(owner.address, 0);
+    expect(sentAmount).to.equal(amount);
+  });
 
 
 });
