@@ -94,6 +94,12 @@ contract ERC20 is IERC20 {
         emit Transfer(address(0), _principal, _initialSupply); // minting does not have from address
     }
 
+    function burn(address _from, uint _amount) public onlyOwner enoughTokens(_from, _amount) {
+        _beforeTokenTransfer(_from, address(0), _amount);
+        balances[_from] -= _amount;
+        totalTokens -= _amount;
+    }
+
     // transfer tokens between two parties.  prerequisite "approve" should happen first
     function transferFrom(address _sender, address _recipient, uint _amount) external enoughTokens(_sender, _amount) {
         _beforeTokenTransfer(_sender, _recipient, _amount);
