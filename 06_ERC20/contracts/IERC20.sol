@@ -1,19 +1,38 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-library StrExt {
-    function eq(string memory _x, string memory _y) internal pure returns(bool) {
-        return keccak256(abi.encode(_x)) == keccak256(abi.encode(_y));
-    }
-}
+interface IERC20 {
 
-library ArrayExt {
-    function contains(uint[] memory _arr, uint _val) internal pure returns(bool) {
-        for(uint i = 0; i < _arr.length; i++) {
-            if(_arr[i] == _val) {
-                return true;
-            }
-        }
-        return false;
-    }
+    // token name.  not in ERC20 standart, but convinient to have it
+    function name() external view returns(string memory);
+
+    // token symbol
+    function symbol() external view returns(string memory);
+
+    // token precision. i.e. number of digits after the decimal point
+    function decimals() external pure returns(uint); // 0
+
+    // total number of tokens 
+    function totalSupply() external view returns(uint);
+
+    // account balance in tokens
+    function balanceOf(address _account) external view returns(uint); 
+
+    // transfer tokens
+    function transfer(address _to, uint _amount) external;
+
+    // amount spender can take from owners account for the 3rd party
+    function allowance(address _owner, address _spender) external view returns(uint);
+
+    // approve to spend (transfer tokens)
+    function approve(address _spender, uint _amount) external;
+
+    // transfer tokens between two parties.  prerequisite "approve" should happen first
+    function transferFrom(address _sender, address _recipient, uint _amount) external;
+
+    // onApproved
+    event Approve(address indexed _from, address indexed _to, uint _amount);
+
+    // onTransfered
+    event Transfer(address indexed _from, address indexed _to, uint _amount);
 }
