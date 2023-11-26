@@ -23,11 +23,18 @@ contract Shop {
     }
 
     function sell(uint _amount) external {
+        require(_amount > 0 && token.balanceOf(msg.sender) >= _amount, "incorrect amount!");
 
+        uint allowance = token.allowance(msg.sender, address(this));
+        require(allowance >= _amount, "check allowance!");
+
+        token.transferFrom(msg.sender, address(this), _amount);
+        payable(msg.sender).transfer(_amount); // 1 token = 1 wei. general case (_amount * conversionRate)
+        emit Sold(_amount, msg.sender);
     }
 
     function tokenBalance() public view returns(uint) {
-        return 0;
+        return token.balanceOf(address(this));
     }
 
 
