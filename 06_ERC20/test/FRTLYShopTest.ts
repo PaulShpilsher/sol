@@ -11,7 +11,7 @@ describe("FRTLYShop", () => {
   let buyer: any;
   let shop: FRTLYShop;
   let shopAddress: string;
-  let erc20: Contract;
+  let erc20: any;
 
   beforeEach(async () => {
     [owner, buyer] = await ethers.getSigners();
@@ -20,22 +20,21 @@ describe("FRTLYShop", () => {
     shop = await shopFactory.deploy();
     await shop.waitForDeployment();
 
-    // log(shop);    
+    // log(shop);
     shopAddress = await shop.getAddress();
-    erc20 = new ethers.Contract(await shop.token(), tokenJson.abi, owner); 
-    });
+    erc20 = new ethers.Contract(await shop.token(), tokenJson.abi, owner);
+  });
 
   it("should have owner and token", async () => {
     expect(await shop.owner()).to.equal(owner.address);
     expect(await shop.token()).to.be.properAddress;
   });
 
-
   it("allows to buy", async () => {
     const tokenAmount = 3;
     const txData = {
       value: tokenAmount,
-      to: shopAddress
+      to: shopAddress,
     };
 
     const tx = await buyer.sendTransaction(txData);
@@ -43,14 +42,43 @@ describe("FRTLYShop", () => {
 
     //  check that the buyer got tokens
     const buyerTokens = await erc20.balanceOf(buyer.address);
-    expect(buyerTokens).to.eq(tokenAmount)
+    expect(buyerTokens).to.eq(tokenAmount);
 
     // check that shop token amount decreased
     await expect(() => tx).to.changeEtherBalance(shop, tokenAmount);
 
     // check that we got Bought event
-    await expect(tx).to.emit(shop, "Bought").withArgs(tokenAmount, buyer.address);
+    await expect(tx)
+      .to.emit(shop, "Bought")
+      .withArgs(tokenAmount, buyer.address);
   });
 
+  it("allows to sell", async () => {
+    const buyTokens = 3;
+    const txData = {
+      value: buyTokens,
+      to: shopAddress,
+    };
 
+    const tx = await buyer.sendTransaction(txData);
+    await tx.wait();
+
+    const sellTokens = 2;
+
+    // get approval
+    const approvalTx = await erc20
+      .connect(buyer)
+      .approve(shopAddress, sellTokens);
+    await approvalTx.wait();
+
+    const sellTx = await shop.connect(buyer).sell(sellTokens);
+    await sellTx.wait();
+
+    const remainingTokens = buyTokens - sellTokens;
+    expect(await erc20.balanceOf(buyer.address)).to.eq(remainingTokens);
+
+    await expect(() => sellTx).to.changeEtherBalance(shop, -sellTokens);
+
+    await expect(tx).to.emit(shop, "Sold").withArgs(sellTokens, shopAddress);
+  });
 });
