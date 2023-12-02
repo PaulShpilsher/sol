@@ -4,17 +4,17 @@ pragma solidity ^0.8.9;
 import "./IERC20.sol";
 import "./FRTLYToken.sol";
 
-contract Shop {
+contract FRTLYShop {
 
     IERC20 public token;
-    address payable owner;
+    address payable public owner;
 
     event Bought(uint _amount, address indexed _buyer);
     event Sold(uint _amount, address indexed _seller);
 
     constructor() {
         token = FRTLYToken(address(this));
-        owner = payable(msg.sender);
+        owner = payable(msg.sender); 
     }
 
     modifier onlyOwner() {
