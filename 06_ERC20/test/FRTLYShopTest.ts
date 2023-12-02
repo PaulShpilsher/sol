@@ -79,6 +79,6 @@ describe("FRTLYShop", () => {
 
     await expect(() => sellTx).to.changeEtherBalance(shop, -sellTokens);
 
-    await expect(tx).to.emit(shop, "Sold").withArgs(sellTokens, shopAddress);
+    await expect(sellTx).to.emit(shop, "Sold").withArgs(sellTokens, shopAddress);
   });
 });
