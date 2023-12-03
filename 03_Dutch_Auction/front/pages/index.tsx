@@ -44,22 +44,26 @@ export default function Home({ props }) {
       method: "eth_requestAccounts", // metamask asks user to select account
     });
 
-    if(!checkNetwork()) {
+    if (!checkNetwork()) {
       // incorrect network
       return;
     }
 
-    // whhen user changes account
+    // TODO: initializeAddress(newAddress);
+
+    // subscribe when user changes account
     ethereum.on("accountChanged", ([newAddress]) => {
-      if(!newAddress) {
+      if (!newAddress) {
         // TODO: resetState();
       }
 
       // TODO: initializeAddress(newAddress);
     });
 
-    
-
+    // subscribe when user changes account
+    ethereum.on("chainChanged", ([networkId]) => {
+      // TODO: resetState();
+    });
   };
 
   // check correct network
@@ -70,7 +74,7 @@ export default function Home({ props }) {
 
     setState({
       ...state,
-      networkError: "Please connect to local hardhat node at localhost:8545"
+      networkError: "Please connect to local hardhat node at localhost:8545",
     });
     return false;
   };
