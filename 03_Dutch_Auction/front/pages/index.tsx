@@ -47,12 +47,12 @@ export default function Home({ props }) {
     await initializeAddress(selectedAddress);
 
     // subscribe when user changes account
-    ethereum.on("accountChanged", ([newAddress]) => {
+    ethereum.on("accountChanged", async ([newAddress]) => {
       if (!newAddress) {
         resetState();
       }
 
-      initializeAddress(newAddress);
+      await initializeAddress(newAddress);
     });
 
     // subscribe when user changes account
@@ -100,23 +100,22 @@ export default function Home({ props }) {
     await updateBalance();
   };
 
-
-  const updateBalance = async (account? : ethers.AddressLike) => {
+  const updateBalance = async (account?: ethers.AddressLike) => {
     const newBalance = await provider?.getBalance(account ?? selectedAccount!);
     setBalance(newBalance);
   };
 
-  if(!selectedAccount ) {
-    return <ConnectWallet
-      connectWallet={connectWallet}
-      networkError={networkError}
-      dismiss={() => setNetworkError(undefined)}
-    />
+  if (!selectedAccount) {
+    return (
+      <ConnectWallet
+        connectWallet={connectWallet}
+        networkError={networkError}
+        dismiss={() => setNetworkError(undefined)}
+      />
+    );
   }
 
   return (
-    <>
-      {balance && <p>Your balance: {ethers.formatEther(balance!)} ETH</p>}
-    </>
+    <>{balance && <p>Your balance: {ethers.formatEther(balance!)} ETH</p>}</>
   );
 }
