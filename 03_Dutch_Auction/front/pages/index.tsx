@@ -7,10 +7,11 @@ import auctionAddress from "../contracts/AuctionEngine-contract-address.json";
 import auctionArtifact from "../contracts/AuctionEngine.json";
 import { AuctionEngine } from "../../typechain-types/AuctionEngine";
 
-const HARDHAT_NETWORK_ID = "1337";
+const HARDHAT_NETWORK_ID = "31337";
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
 
 export default function Home({ props }) {
+  "client only";
   const [selectedAccount, setSelectedAccount] = useState<ethers.AddressLike>();
   const [networkError, setNetworkError] = useState<string>();
   const [transactionError, setTransactionError] = useState<string>();
@@ -20,12 +21,12 @@ export default function Home({ props }) {
   const [provider, setProvider] = useState<ethers.BrowserProvider>();
   const [auction, setAuction] = useState<ethers.Contract>();
 
-  const ethereum = window.ethereum;
+  const ethereum = globalThis.ethereum;
 
-  useEffect(() => {
-    console.log("connecting wallet use effect");
-    connectWallet();
-  });
+  // useEffect(() => {
+  //   console.log("connecting wallet use effect");
+  //   connectWallet();
+  // });
 
   const connectWallet = async () => {
     if (ethereum === undefined) {
@@ -104,5 +105,17 @@ export default function Home({ props }) {
     setBalance(newBalance);
   };
 
-  return <div>Hello</div>;
+  if(!selectedAccount ) {
+    return <ConnectWallet
+      connectWallet={connectWallet}
+      networkError={networkError}
+      dismiss={() => setNetworkError(undefined)}
+    />
+  }
+
+  return (
+    <>
+      {balance && <p>Your balance: {ethers.formatEther(balance!)} ETH</p>}
+    </>
+  );
 }
