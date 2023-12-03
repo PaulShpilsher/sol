@@ -1,22 +1,27 @@
-import { ethers } from "hardhat";
+import hte, { network, ethers } from "hardhat";
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/src/signers";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  if (network.name === "hardhat") {
+    console.warn(`
+    You are trying to deploy contrct to hardhat network,
+    which automatically gets created and destroyed each time.
+    Use hardhat option '--network localhost
+    `);
+  }
 
-  const lockedAmount = ethers.parseEther("0.001");
+  const [deployer] = (await ethers.getSigners()) as any[];
 
-  const lock = await ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
-
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
+  console.log("Deploying with ", deployer.address);
+  const auctionEngineFactory = await ethers.getContractFactory(
+    "AuctionEngine",
+    deployer
   );
+
+  const engine = await auctionEngineFactory.deploy(); // deploying contract to BC
+  await engine.waitForDeployment(); // wait unitl contract deployed
+
+  console.log("Deployed at ", (await engine.getAddress());
 }
 
 // We recommend this pattern to be able to use async/await everywhere
