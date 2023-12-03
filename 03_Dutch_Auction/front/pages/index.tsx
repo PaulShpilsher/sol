@@ -49,6 +49,15 @@ export default function Home({ props }) {
       return;
     }
 
+    // whhen user changes account
+    ethereum.on("accountChanged", ([newAddress]) => {
+      if(!newAddress) {
+        // TODO: resetState();
+      }
+
+      // TODO: initializeAddress(newAddress);
+    });
+
     
 
   };
