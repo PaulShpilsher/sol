@@ -44,7 +44,7 @@ export default function Home({ props }) {
       return;
     }
 
-    initializeAddress(selectedAddress);
+    await initializeAddress(selectedAddress);
 
     // subscribe when user changes account
     ethereum.on("accountChanged", ([newAddress]) => {
@@ -100,8 +100,9 @@ export default function Home({ props }) {
     await updateBalance();
   };
 
-  const updateBalance = async () => {
-    const newBalance = await provider?.getBalance(selectedAccount!);
+
+  const updateBalance = async (account? : ethers.AddressLike) => {
+    const newBalance = await provider?.getBalance(account ?? selectedAccount!);
     setBalance(newBalance);
   };
 
