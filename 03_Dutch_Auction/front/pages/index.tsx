@@ -10,28 +10,15 @@ import { AuctionEngine } from "../../typechain-types/AuctionEngine";
 const HARDHAT_NETWORK_ID = "1337";
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
 
-type State = {
-  selectedAccount: ethers.AddressLike | null;
-  txBeingSent: string | null;
-  networkError: string | null;
-  transactionError: string | null;
-  balance: bigint | undefined;
-};
-
-const defaultState = (): State => ({
-  selectedAccount: null,
-  txBeingSent: null,
-  networkError: null,
-  transactionError: null,
-  balance: undefined,
-});
-
 export default function Home({ props }) {
-  const [state, setState] = useState(defaultState());
-  const [provider, setProvider] = useState(
-    null as ethers.BrowserProvider | null
-  );
-  const [auction, setAuction] = useState(null as null);
+  const [selectedAccount, setSelectedAccount] = useState<ethers.AddressLike>();
+  const [networkError, setNetworkError] = useState<string>();
+  const [transactionError, setTransactionError] = useState<string>();
+  const [balance, setBalance] = useState<bigint>();
+  const [txBeingSent, setTxBeingSent] = useState<string>();
+
+  const [provider, setProvider] = useState<ethers.BrowserProvider>();
+  const [auction, setAuction] = useState<ethers.Contract>();
 
   const ethereum = window.ethereum;
 
@@ -42,10 +29,7 @@ export default function Home({ props }) {
 
   const connectWallet = async () => {
     if (ethereum === undefined) {
-      setState({
-        ...state,
-        networkError: "Please install Metamask!",
-      });
+      setNetworkError("Please install Metamask!");
       return;
     }
 
@@ -77,7 +61,14 @@ export default function Home({ props }) {
   };
 
   // reset to iniital state
-  const resetState = () => setState(defaultState());
+  const resetState = () => {
+    setSelectedAccount(undefined);
+    setNetworkError(undefined);
+    setTransactionError(undefined);
+    setBalance(undefined);
+    setTxBeingSent(undefined);
+    setAuction(undefined);
+  };
 
   // check correct network
   const checkNetwork = (): boolean => {
@@ -85,10 +76,7 @@ export default function Home({ props }) {
       return true;
     }
 
-    setState({
-      ...state,
-      networkError: "Please connect to local hardhat node at localhost:8545",
-    });
+    setNetworkError("Please connect to local hardhat node at localhost:8545");
     return false;
   };
 
@@ -105,20 +93,15 @@ export default function Home({ props }) {
       await provider.getSigner(0)
     );
 
-    setState({
-      ...state,
-      selectedAccount: selectedAddress,
-    });
+    setAuction(auction);
+    setSelectedAccount(selectedAddress);
 
     await updateBalance();
   };
 
   const updateBalance = async () => {
-    const newBalance = await provider?.getBalance(state.selectedAccount!);
-    setState({
-      ...state,
-      balance: newBalance
-    });
+    const newBalance = await provider?.getBalance(selectedAccount!);
+    setBalance(newBalance);
   };
 
   return <div>Hello</div>;
