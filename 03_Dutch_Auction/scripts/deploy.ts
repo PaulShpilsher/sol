@@ -28,7 +28,7 @@ async function main() {
   console.log("Deployed at ", await engine.getAddress());
 
   await saveFrontendFiles({
-    DutchAuctionEngine: engine,
+    AuctionEngine: engine,
   });
 }
 

@@ -11,3 +11,10 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.ts
 ```
+
+
+Deploy contract to localhost
+
+```shell
+npx hardhat run scripts/deploy.ts --network localhost
+```
