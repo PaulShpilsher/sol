@@ -17,15 +17,17 @@ type State = {
   balance: number | null;
 };
 
-export default function Home({ props }) {
-  const [state, setState] = useState({
-    selectedAccount: null,
-    txBeingSent: null,
-    networkError: null,
-    transactionError: null,
-    balance: null,
-  } as State);
+const defaultState = (): State => ({
+  selectedAccount: null,
+  txBeingSent: null,
+  networkError: null,
+  transactionError: null,
+  balance: null,
+});
 
+export default function Home({ props }) {
+
+  const [state, setState] = useState(defaultState());
   console.log("Initial state ", state);
 
   const ethereum = window.ethereum;
@@ -54,7 +56,7 @@ export default function Home({ props }) {
     // subscribe when user changes account
     ethereum.on("accountChanged", ([newAddress]) => {
       if (!newAddress) {
-        // TODO: resetState();
+        resetState();
       }
 
       // TODO: initializeAddress(newAddress);
@@ -62,9 +64,12 @@ export default function Home({ props }) {
 
     // subscribe when user changes account
     ethereum.on("chainChanged", ([networkId]) => {
-      // TODO: resetState();
+      resetState();
     });
   };
+
+  // reset to iniital state
+  const resetState = () => setState(defaultState());
 
   // check correct network
   const checkNetwork = (): boolean => {
