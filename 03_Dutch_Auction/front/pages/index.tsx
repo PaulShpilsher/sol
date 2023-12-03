@@ -1,20 +1,21 @@
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { ethers } from "ethers";
 
 import { ConnectWallet } from "../components/ConnectWallet";
 
 import auctionAddress from "../contracts/AuctionEngine-contract-address.json";
 import auctionArtifact from "../contracts/AuctionEngine.json";
+import { AuctionEngine } from "../../typechain-types/AuctionEngine";
 
 const HARDHAT_NETWORK_ID = "1337";
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
 
 type State = {
-  selectedAccount: string | null;
+  selectedAccount: ethers.AddressLike | null;
   txBeingSent: string | null;
   networkError: string | null;
   transactionError: string | null;
-  balance: number | null;
+  balance: bigint | undefined;
 };
 
 const defaultState = (): State => ({
@@ -22,15 +23,22 @@ const defaultState = (): State => ({
   txBeingSent: null,
   networkError: null,
   transactionError: null,
-  balance: null,
+  balance: undefined,
 });
 
 export default function Home({ props }) {
-
   const [state, setState] = useState(defaultState());
-  console.log("Initial state ", state);
+  const [provider, setProvider] = useState(
+    null as ethers.BrowserProvider | null
+  );
+  const [auction, setAuction] = useState(null as null);
 
   const ethereum = window.ethereum;
+
+  useEffect(() => {
+    console.log("connecting wallet use effect");
+    connectWallet();
+  });
 
   const connectWallet = async () => {
     if (ethereum === undefined) {
@@ -51,7 +59,7 @@ export default function Home({ props }) {
       return;
     }
 
-    // TODO: initializeAddress(newAddress);
+    initializeAddress(selectedAddress);
 
     // subscribe when user changes account
     ethereum.on("accountChanged", ([newAddress]) => {
@@ -59,7 +67,7 @@ export default function Home({ props }) {
         resetState();
       }
 
-      // TODO: initializeAddress(newAddress);
+      initializeAddress(newAddress);
     });
 
     // subscribe when user changes account
@@ -82,6 +90,35 @@ export default function Home({ props }) {
       networkError: "Please connect to local hardhat node at localhost:8545",
     });
     return false;
+  };
+
+  // initialize address
+  const initializeAddress = async (selectedAddress) => {
+    // connect to ethereum provider
+    const provider = new ethers.BrowserProvider(ethereum);
+    setProvider(provider);
+
+    // get contract
+    const auction = new ethers.Contract(
+      auctionAddress.AuctionEngine,
+      auctionArtifact.abi,
+      await provider.getSigner(0)
+    );
+
+    setState({
+      ...state,
+      selectedAccount: selectedAddress,
+    });
+
+    await updateBalance();
+  };
+
+  const updateBalance = async () => {
+    const newBalance = await provider?.getBalance(state.selectedAccount!);
+    setState({
+      ...state,
+      balance: newBalance
+    });
   };
 
   return <div>Hello</div>;
