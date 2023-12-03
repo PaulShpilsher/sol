@@ -28,8 +28,10 @@ export default function Home({ props }) {
 
   console.log("Initial state ", state);
 
+  const ethereum = window.ethereum;
+
   const connectWallet = async () => {
-    if (window.ethereum === undefined) {
+    if (ethereum === undefined) {
       setState({
         ...state,
         networkError: "Please install Metamask!",
@@ -38,11 +40,30 @@ export default function Home({ props }) {
     }
 
     // select user address
-    const [selectedAddress] = await window.ethereum.request({
+    const [selectedAddress] = await ethereum.request({
       method: "eth_requestAccounts", // metamask asks user to select account
     });
 
+    if(!checkNetwork()) {
+      // incorrect network
+      return;
+    }
 
+    
+
+  };
+
+  // check correct network
+  const checkNetwork = (): boolean => {
+    if (ethereum.networkVersion === HARDHAT_NETWORK_ID) {
+      return true;
+    }
+
+    setState({
+      ...state,
+      networkError: "Please connect to local hardhat node at localhost:8545"
+    });
+    return false;
   };
 
   return <div>Hello</div>;
