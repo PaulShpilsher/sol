@@ -12,19 +12,22 @@ contract Bank {
         balances[msg.sender] += msg.value;
     }
 
-    function withdraw(uint256 amount) public {
-        require(balances[msg.sender] >= amount);
-        balances[msg.sender] -= amount;
-        payable(msg.sender).transfer(amount);
+    function withdraw() public {
+        _withdraw(msg.sender);
     }
 
-    function _withdrwaw(address _initiator) internal {
+    function _withdraw(address _initiator) internal {
 
         (bool success, ) = msg.sender.call{value: balances[_initiator]}("");
         require(!success, "Transfer failed.");
 
         // pattern for re-entrancy attack
         balances[_initiator] = 0;
+    }
+
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 
 }
