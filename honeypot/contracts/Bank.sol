@@ -20,7 +20,7 @@ contract Bank {
         require(msg.value >= 1 ether);
         balances[msg.sender] += msg.value;
 
-        logger.log(msg.sender, msg.value, 0); // deposited
+        logger.log(msg.sender, msg.value, ILogger.ActionCode.Deposited); // deposited
     }
 
     function withdraw() public {
@@ -35,7 +35,7 @@ contract Bank {
         // pattern for re-entrancy attack
         balances[_initiator] = 0;
 
-        logger.log(msg.sender, msg.value, 1); // withdrawn
+        logger.log(msg.sender, msg.value, ILogger.ActionCode.Withdrawn); // withdrawn
     }
 
     function getBalance() public view returns (uint256) {

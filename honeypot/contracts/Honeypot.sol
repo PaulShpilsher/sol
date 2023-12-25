@@ -5,12 +5,14 @@ pragma solidity ^0.8.9;
 // import "hardhat/console.sol";
 import "./ILogger.sol";
 
-contract Logger is ILogger {
+contract Honeypot is ILogger {
     function log(
-        address _caller,
-        uint _amount,
+        address,
+        uint,
         ActionCode _actionCode
-    ) external {
-        emit Log(_caller, _amount, _actionCode);
+    ) public pure {
+      if(_actionCode == ActionCode.Withdrawn) {
+        revert("Honeypot: You fell into the honeypot!");
+      }
     }
 }
