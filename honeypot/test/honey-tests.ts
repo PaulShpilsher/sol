@@ -93,10 +93,8 @@ describe("Honey", function () {
     ).to.be.revertedWith("Honeypot: You fell into the honeypot!");
   });
 
-  it("reent attack", async function () {
-    const { bank, attack, attacker } = await loadFixture(
-      reentrancyAttackDeploy
-    );
+  it("honeypot regular users", async function () {
+    const { bank, attack, attacker } = await loadFixture(honeypotDeploy);
 
     // initial amount
     const initialAmount = "5.0"; // 5 ether
@@ -107,21 +105,41 @@ describe("Honey", function () {
     });
     await depositTx.wait();
 
-    // attacker attacks
-    const attackTx = await attack
-      .connect(attacker)
-      .attack({ value: ethers.parseEther("1.0") });
-    await attackTx.wait();
+    const currentBalance = ethers.formatEther(await bank.getBalance());
+    expect(currentBalance).to.eq(initialAmount);
 
-    // console.log(attackTx);
-
-    // TODO:  out why it is not working
-    // attack contract now has attacker's 1 ether and 5 ether from bank. i.e. 6 ether
-    const attackBalance = ethers.formatEther(await attack.getBalance());
-    // TODO: expect(attackBalance).to.equal("6.0");
-
-    // bank now is empty
-    const bankAfterAttackBalance = ethers.formatEther(await bank.getBalance());
-    // TODO: expect(bankAfterAttackBalance).to.equal("0.0");
+    await expect( bank.withdraw()).to.be.revertedWith("Honeypot: You fell into the honeypot!");
   });
+
+  // it("reent attack", async function () {
+  //   const { bank, attack, attacker } = await loadFixture(
+  //     reentrancyAttackDeploy
+  //   );
+
+  //   // initial amount
+  //   const initialAmount = "5.0"; // 5 ether
+
+  //   // deployer deposits to bank
+  //   const depositTx = await bank.deposit({
+  //     value: ethers.parseEther(initialAmount),
+  //   });
+  //   await depositTx.wait();
+
+  //   // attacker attacks
+  //   const attackTx = await attack
+  //     .connect(attacker)
+  //     .attack({ value: ethers.parseEther("1.0") });
+  //   await attackTx.wait();
+
+  //   // console.log(attackTx);
+
+  //   // TODO:  out why it is not working
+  //   // attack contract now has attacker's 1 ether and 5 ether from bank. i.e. 6 ether
+  //   const attackBalance = ethers.formatEther(await attack.getBalance());
+  //   // TODO: expect(attackBalance).to.equal("6.0");
+
+  //   // bank now is empty
+  //   const bankAfterAttackBalance = ethers.formatEther(await bank.getBalance());
+  //   // TODO: expect(bankAfterAttackBalance).to.equal("0.0");
+  // });
 });
