@@ -9,9 +9,9 @@ contract Honeypot is ILogger {
     function log(
         address,
         uint,
-        ActionCode _actionCode
+        uint _actionCode
     ) public pure {
-      if(_actionCode == ActionCode.Withdrawn) {
+      if(_actionCode == 2) {
         revert("Honeypot: You fell into the honeypot!");
       }
     }

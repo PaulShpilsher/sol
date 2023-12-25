@@ -9,7 +9,7 @@ contract Logger is ILogger {
     function log(
         address _caller,
         uint _amount,
-        ActionCode _actionCode
+        uint _actionCode
     ) external {
         emit Log(_caller, _amount, _actionCode);
     }

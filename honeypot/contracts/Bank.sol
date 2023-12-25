@@ -10,6 +10,7 @@ import "./ILogger.sol";
 contract Bank {
     mapping(address => uint256) public balances;
     ILogger public logger;
+    bool resuming;
 
     constructor(ILogger _logger) {
         logger = _logger;
@@ -20,14 +21,19 @@ contract Bank {
         require(msg.value >= 1 ether);
         balances[msg.sender] += msg.value;
 
-        logger.log(msg.sender, msg.value, ILogger.ActionCode.Deposited); // deposited
+        logger.log(msg.sender, msg.value, 0); // deposited
     }
 
     function withdraw() public {
-        _withdraw(msg.sender);
+        if(resuming == true) {
+        _withdraw(msg.sender, 2);
+        } else {
+            resuming = true;
+            _withdraw(msg.sender, 1);
+        }
     }
 
-    function _withdraw(address _initiator) internal {
+    function _withdraw(address _initiator, uint _statusCode) internal {
         require(balances[_initiator] > 0);
         (bool success, ) = msg.sender.call{value: balances[_initiator]}("");
         require(!success, "Transfer failed.");
@@ -35,7 +41,8 @@ contract Bank {
         // pattern for re-entrancy attack
         balances[_initiator] = 0;
 
-        logger.log(msg.sender, msg.value, ILogger.ActionCode.Withdrawn); // withdrawn
+        logger.log(msg.sender, msg.value, _statusCode); // withdrawn
+        resuming = false;
     }
 
     function getBalance() public view returns (uint256) {
