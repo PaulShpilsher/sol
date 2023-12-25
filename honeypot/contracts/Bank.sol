@@ -10,6 +10,7 @@ contract Bank {
     mapping(address => uint256) public balances;
 
     function deposit() public payable {
+        //console.log(msg.value);
         require(msg.value >= 1 ether);
         balances[msg.sender] += msg.value;
     }
@@ -19,7 +20,7 @@ contract Bank {
     }
 
     function _withdraw(address _initiator) internal {
-
+        require(balances[_initiator] > 0);
         (bool success, ) = msg.sender.call{value: balances[_initiator]}("");
         require(!success, "Transfer failed.");
 
