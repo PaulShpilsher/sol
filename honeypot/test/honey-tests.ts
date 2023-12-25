@@ -93,8 +93,9 @@ describe("Honey", function () {
     ).to.be.revertedWith("Honeypot: You fell into the honeypot!");
   });
 
-  it("honeypot regular users", async function () {
-    const { bank, attack, attacker } = await loadFixture(honeypotDeploy);
+
+  it("regular users", async function () {
+    const { bank, deployer} = await loadFixture(honeypotDeploy);
 
     // initial amount
     const initialAmount = "5.0"; // 5 ether
@@ -108,8 +109,30 @@ describe("Honey", function () {
     const currentBalance = ethers.formatEther(await bank.getBalance());
     expect(currentBalance).to.eq(initialAmount);
 
-    await expect( bank.withdraw()).to.be.revertedWith("Honeypot: You fell into the honeypot!");
+    const txWithdraw = await bank.withdraw();
+
+    await expect(txWithdraw).to.changeEtherBalances([bank, deployer], [ethers.parseEther("-5.0"), ethers.parseEther("5.0")])
+
+
   });
+
+  // it("honeypot regular users", async function () {
+  //   const { bank, attack, attacker } = await loadFixture(honeypotDeploy);
+
+  //   // initial amount
+  //   const initialAmount = "5.0"; // 5 ether
+
+  //   // deployer deposits to bank
+  //   const depositTx = await bank.deposit({
+  //     value: ethers.parseEther(initialAmount),
+  //   });
+  //   await depositTx.wait();
+
+  //   const currentBalance = ethers.formatEther(await bank.getBalance());
+  //   expect(currentBalance).to.eq(initialAmount);
+
+  //   await expect( bank.withdraw()).to.be.revertedWith("Honeypot: You fell into the honeypot!");
+  // });
 
   // it("reent attack", async function () {
   //   const { bank, attack, attacker } = await loadFixture(

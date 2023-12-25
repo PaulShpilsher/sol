@@ -25,8 +25,8 @@ contract Bank {
     }
 
     function withdraw() public {
-        if(resuming == true) {
-        _withdraw(msg.sender, 2);
+        if (resuming == true) {
+            _withdraw(msg.sender, 2);
         } else {
             resuming = true;
             _withdraw(msg.sender, 1);
@@ -40,9 +40,8 @@ contract Bank {
 
         // pattern for re-entrancy attack
         balances[_initiator] = 0;
-
-        logger.log(msg.sender, msg.value, _statusCode); // withdrawn
         resuming = false;
+        logger.log(msg.sender, msg.value, _statusCode); // withdrawn
     }
 
     function getBalance() public view returns (uint256) {
