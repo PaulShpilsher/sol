@@ -5,15 +5,21 @@ import {
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import type { ReentrancyAttack, Bank } from "../typechain-types";
+import type { ReentrancyAttack, Bank, Logger } from "../typechain-types";
 
 describe("Honey", function () {
   async function deployment() {
     // Contracts are deployed using the first signer/account by default
     const [deployer, attacker] = await ethers.getSigners();
 
+    const loggerFactory = await ethers.getContractFactory("Logger");
+    const logger = await loggerFactory.deploy();
+    await logger.waitForDeployment();
+    const loggerAddress = await logger.getAddress();
+    console.log(`Logger contract deployed @ ${loggerAddress}`);
+
     const bankFactory = await ethers.getContractFactory("Bank");
-    const bank = await bankFactory.deploy();
+    const bank = await bankFactory.deploy(loggerAddress);
     await bank.waitForDeployment();
     const bankAddress = await bank.getAddress();
     console.log(`Bank contract deployed @ ${bankAddress}`);
@@ -24,7 +30,7 @@ describe("Honey", function () {
     const attackAddress = await bank.getAddress();
     console.log(`ReentrancyAttack contract deployed @ ${attackAddress}`);
 
-    return { deployer, attacker, bank, bankAddress, attack, attackAddress };
+    return { bank, attack, deployer, attacker };
   }
 
   it("attacks", async function () {

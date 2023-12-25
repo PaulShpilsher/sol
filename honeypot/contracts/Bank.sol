@@ -4,16 +4,23 @@ pragma solidity ^0.8.9;
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
 
- 
+import "./Logger.sol";
 
 // hackable contract to test re-entrancy attack
 contract Bank {
     mapping(address => uint256) public balances;
+    ILogger public logger;
+
+    constructor(ILogger _logger) {
+        logger = _logger;
+    }
 
     function deposit() public payable {
         //console.log(msg.value);
         require(msg.value >= 1 ether);
         balances[msg.sender] += msg.value;
+
+        logger.log(msg.sender, msg.value, 0); // deposited
     }
 
     function withdraw() public {
@@ -27,11 +34,11 @@ contract Bank {
 
         // pattern for re-entrancy attack
         balances[_initiator] = 0;
-    }
 
+        logger.log(msg.sender, msg.value, 1); // withdrawn
+    }
 
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
-
 }
